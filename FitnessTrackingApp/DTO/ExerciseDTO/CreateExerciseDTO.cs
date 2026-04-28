@@ -4,6 +4,9 @@ using FitnessTrackingApp.Models;
 
 namespace FitnessTrackingApp.DTO.ExerciseDTO
 {
+    /// <summary>
+    /// Упражнение как данные для создания объекта.
+    /// </summary>
     public class CreateExerciseDTO
     {
         [Required]

@@ -2,6 +2,9 @@
 
 namespace FitnessTrackingApp.DTO.ActivityDTO
 {
+    /// <summary>
+    /// Активность как данные для создания новой записи.
+    /// </summary>
     public class CreateActivityDTO
     {
         [Required(ErrorMessage = "Дата обязательна")]

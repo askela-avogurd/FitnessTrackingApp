@@ -2,6 +2,9 @@
 
 namespace FitnessTrackingApp.DTO.ActivityDTO
 {
+    /// <summary>
+    /// АКтивность как данные для обновления объекта.
+    /// </summary>
     public class UpdateActivityDTO
     {
         [Range(1, 1440, ErrorMessage = "Минуты должны быть от 1 до 1440")]

@@ -4,7 +4,7 @@ using FitnessTrackingApp.Data;
 namespace FitnessTrackingApp.DTO.ActivityDTO
 {
     /// <summary>
-    /// АКтивность как объект для отображения.
+    /// Активность как объект для отображения.
     /// </summary>
     public class ActivityResponseDTO
     {
@@ -35,6 +35,9 @@ namespace FitnessTrackingApp.DTO.ActivityDTO
         /// <summary>
         /// Преобразует Activity в DailySummaryDTO.
         /// </summary>
+        /// <param name="date">Дата (без времени).</param>
+        /// <param name="context">Контекст БД.</param>
+        /// <returns>Активность как объект для отображения.</returns>
         public static DailySummaryDTO MapToResponseDTO(DateTime date, ApplicationDbContext context)
         {
             var activitiesPerDay = new DailySummaryDTO()

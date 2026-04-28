@@ -3,7 +3,7 @@
 namespace FitnessTrackingApp.DTO.TrainingProgramDTO
 {
     /// <summary>
-    /// Тренировочная программа как объект с данными для создания новой модели.
+    /// Тренировочная программа как данные для создания нового объекта.
     /// </summary>
     public class CreateProgramDTO
     {
