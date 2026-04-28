@@ -1,0 +1,6 @@
+//@FitnessTrackingApp_HostAddress = http://localhost:5001
+
+# GET {"http://localhost:5001"}/weatherforecast/
+# Accept: application/json
+
+##
