@@ -44,7 +44,6 @@ namespace FitnessTrackingApp.Controllers
         {
             // Отображаем только активные программы.
             var result = await _context.TrainingProgram
-                .Where(p => p.IsActive)
                 .Select(item => ProgramResponseDTO.MapToResponseDTO(item))
                 .ToListAsync();
 
@@ -63,9 +62,9 @@ namespace FitnessTrackingApp.Controllers
         {
             var trainingProgram = await _context.TrainingProgram.FindAsync(id);
 
-            if (trainingProgram == null || !trainingProgram.IsActive)
+            if (trainingProgram == null)
             {
-                return NotFound("The training program does not exist or is inactive.");
+                return NotFound("The training program does not exist.");
             }
 
             return Ok(ProgramResponseDTO.MapToResponseDTO(trainingProgram));
