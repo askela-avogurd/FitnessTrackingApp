@@ -13,10 +13,19 @@ namespace FitnessTrackingApp.DTO.ActivityDTO
         /// </summary>
         public class DailySummaryDTO
         {
+            /// <summary>
+            /// Дата (без времени).
+            /// </summary>
             public DateTime Date { get; set; }
+
+            /// <summary>
+            /// Суммарное время всех активностей (упражнений) за день.
+            /// </summary>
             public int TotalMinutes { get; set; }
 
-            // Список всех активностей (упражнений) за день.
+            /// <summary>
+            /// Список всех активностей (упражнений) за день.
+            /// </summary>
             public List<ActivityItemDTO> Activities { get; set; } = new();
         }
 
@@ -25,10 +34,29 @@ namespace FitnessTrackingApp.DTO.ActivityDTO
         /// </summary>
         public class ActivityItemDTO
         {
+            /// <summary>
+            /// ID активности.
+            /// </summary>
             public int Id { get; set; }
+
+            /// <summary>
+            /// Время в минутах.
+            /// </summary>
             public int Minutes { get; set; }
+
+            /// <summary>
+            /// Заметка.
+            /// </summary>
             public string? Notes { get; set; }
+
+            /// <summary>
+            /// ID упражнения.
+            /// </summary>
             public int ExerciseId { get; set; }
+
+            /// <summary>
+            /// ID тренировочной программы.
+            /// </summary>
             public int ProgramId { get; set; }
         }
 
