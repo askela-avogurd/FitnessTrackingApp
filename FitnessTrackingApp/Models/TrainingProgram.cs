@@ -3,6 +3,9 @@ using FitnessTrackingApp.DTO.TrainingProgramDTO;
 
 namespace FitnessTrackingApp.Models
 {
+    /// <summary>
+    /// Тренировочная программа.
+    /// </summary>
     public class TrainingProgram
     {
         [Key]

@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FitnessTrackingApp.Models
 {
+    /// <summary>
+    /// Упражнение.
+    /// </summary>
     public class Exercise
     {
         [Key]
@@ -14,6 +17,7 @@ namespace FitnessTrackingApp.Models
 
         public bool IsActive { get; set; } = true;
 
+        // Внешний ссылка (внешний ключ) натренировочную программу.
         [Required]
         public int TrainingProgramId { get; set; }
 
