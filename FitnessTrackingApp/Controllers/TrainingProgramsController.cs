@@ -51,16 +51,16 @@ namespace FitnessTrackingApp.Controllers
         }
 
         /// <summary>
-        /// Получает тренировочную программу по ID.
+        /// Получает тренировочную программу по названию.
         /// </summary>
-        /// <param name="id">ID программы.</param>
-        /// <returns>Код ответа HTTP и объект-демонстрацию тренировочной программы.</returns>
+        /// <param name="name">Название программы.</param>
+        /// <returns>Код ответа HTTP и объект-демонстрация тренировочной программы.</returns>
         ///
-        /// GET: api/TrainingPrograms/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ProgramResponseDTO>> GetTrainingProgram(int id)
+        /// GET: api/TrainingPrograms/Функциональный тренинг
+        [HttpGet("{name}")]
+        public async Task<ActionResult<ProgramResponseDTO>> GetTrainingProgramByName(string name)
         {
-            var trainingProgram = await _context.TrainingProgram.FindAsync(id);
+            var trainingProgram = GetProgramByName(name);
 
             if (trainingProgram == null)
             {
@@ -71,17 +71,17 @@ namespace FitnessTrackingApp.Controllers
         }
 
         /// <summary>
-        /// Обновляет данные тренировочной программы по ID.
+        /// Обновляет данные тренировочной программы по названию.
         /// </summary>
-        /// <param name="id">ID программы.</param>
+        /// <param name="name">Название программы.</param>
         /// <param name="dto">Данные на редактирование из HTTP запроса.</param>
         /// <returns>Код ответа HTTP и объект-демонстрацию измененной тренировочной программы.</returns>
         /// 
         /// PUT: api/TrainingPrograms/5
-        [HttpPut("{id}")]
-        public async Task<ActionResult<ProgramResponseDTO>> PutTrainingProgram(int id, [FromBody] UpdateProgramDTO dto)
+        [HttpPut("{name}")]
+        public async Task<ActionResult<ProgramResponseDTO>> PutTrainingProgram(string name, [FromBody] UpdateProgramDTO dto)
         {
-            var program = await _context.TrainingProgram.FindAsync(id);
+            var program = GetProgramByName(name);
 
             if (program == null)
             {
@@ -177,9 +177,16 @@ namespace FitnessTrackingApp.Controllers
             return Ok();
         }
 
-        private bool TrainingProgramExists(int id)
+        private bool TrainingProgramExists(string name)
         {
-            return _context.TrainingProgram.Any(e => e.Id == id);
+            return _context.TrainingProgram.Any(e => e.Name == name);
+        }
+
+        private TrainingProgram? GetProgramByName(string name)
+        {
+            return _context.TrainingProgram
+                .Where(p => p.Name.Equals(name))
+                .FirstOrDefault();
         }
     }
 }
