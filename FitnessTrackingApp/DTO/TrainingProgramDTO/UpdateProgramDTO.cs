@@ -7,8 +7,19 @@ namespace FitnessTrackingApp.DTO.TrainingProgramDTO
     /// </summary>
     public class UpdateProgramDTO
     {
+        /// <summary>
+        /// Название программы.
+        /// </summary>
         public string? Name { get; set; }
+
+        /// <summary>
+        /// Тип программы.
+        /// </summary>
         public string? Type { get; set; }
+
+        /// <summary>
+        /// Активна/неактивна.
+        /// </summary>
         public bool? IsActive { get; set; }
     }
 }
