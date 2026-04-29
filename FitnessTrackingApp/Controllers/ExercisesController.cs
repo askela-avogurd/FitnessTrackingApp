@@ -35,74 +35,109 @@ namespace FitnessTrackingApp.Controllers
         /// <summary>
         /// Получает список всех упражнений.
         /// </summary>
-        /// <returns>Список всех упражнений в виде .</returns>
-        // GET: api/Exercises
+        /// <returns>Код ответа HTTP и полная информация о всех упражнениях.</returns>
+        /// 
+        /// GET: api/Exercises
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Exercise>>> GetExercise()
+        public async Task<ActionResult<IEnumerable<ExerciseResponseDTO>>> GetAll()
         {
-            return await _context.Exercise.ToListAsync();
+            var exercises = await _context.Exercise
+                .Select(e => ExerciseResponseDTO.MapToResponseDTO(e,_context))
+                .ToListAsync();
+
+            return Ok(exercises);
         }
 
-        // GET: api/Exercises/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Exercise>> GetExercise(int id)
+        /// <summary>
+        /// Поиск упражнения по названию.
+        /// </summary>
+        /// <param name="name">Название упражнения.</param>
+        /// <returns>Код ответа HTTP и полная информация об упражнении.</returns>
+        /// 
+        /// GET: api/Exercises/Приседания
+        [HttpGet("{name}")]
+        public async Task<ActionResult<ExerciseResponseDTO>> GetByName(string name)
         {
-            var exercise = await _context.Exercise.FindAsync(id);
+            var exercise = await _context.Exercise
+                .Where(e => e.Name.Equals(name))
+                .FirstOrDefaultAsync();
 
             if (exercise == null)
             {
-                return NotFound();
+                return NotFound("There is no exercise wuth this name");
             }
 
-            return exercise;
+            return Ok(exercise);
         }
 
-        // PUT: api/Exercises/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutExercise(int id, Exercise exercise)
+        /// <summary>
+        /// Обновляет данные упражнения.
+        /// </summary>
+        /// <param name="name">Название упражнения.</param>
+        /// <param name="dto">Объект с данными для обновления.</param>
+        /// <returns>Код ответа HTTP и полная информация об измененном объекте.</returns>
+        /// 
+        /// PUT: api/Exercises/Приседания
+        [HttpPut("{name}")]
+        public async Task<IActionResult> PutExercise(string name, [FromBody] UpdateExerciseDTO dto)
         {
-            if (id != exercise.Id)
+            if (ExerciseExists(name))
             {
-                return BadRequest();
+                return NotFound("There is no exercise wuth this name");
             }
 
-            _context.Entry(exercise).State = EntityState.Modified;
+            var exercise = await _context.Exercise
+                .Where(e => e.Name.Equals(name))
+                .FirstOrDefaultAsync();
 
-            try
+            if (dto.Name != null)
             {
-                await _context.SaveChangesAsync();
+                exercise.Name = dto.Name;
             }
-            catch (DbUpdateConcurrencyException)
+            if (dto.IsActive.HasValue)
             {
-                if (!ExerciseExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                exercise.IsActive = dto.IsActive.Value;
+            }
+            if (dto.TrainingProgramName != null)
+            {
+                exercise.TrainingProgramId = await _context.TrainingProgram
+                    .Where(tp => tp.Name.Equals(dto.TrainingProgramName))
+                    .Select(tp => tp.Id)
+                    .FirstOrDefaultAsync();
             }
 
-            return NoContent();
+            _context.Entry(dto).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(ExerciseResponseDTO.MapToResponseDTO(exercise, _context));
         }
 
-        // POST: api/Exercises
+        /// <summary>
+        /// Создает новое упражнение.
+        /// </summary>
+        /// <param name="dto">Объект с данными для создания упражнения.</param>
+        /// <returns>Код ответа HTTP и полная информация о добавленном объекте.</returns>
+        /// 
+        /// POST: api/Exercises
         [HttpPost]
         public async Task<ActionResult<Exercise>> PostExercise([FromBody] CreateExerciseDTO dto)
         {
-            // Проверка на существования программы, к которому будет привязано упражнение.
-            var program = await _context.TrainingProgram.FindAsync(dto.TrainingProgramId);
+            // Проверка на существование программы, к которой будет привязано упражнение.
+            var program = await _context.TrainingProgram
+                .Where(p => p.Name.Equals(dto.TrainingProgramName))
+                .FirstOrDefaultAsync();
+
             if (program == null)
             {
-                return BadRequest("There is no program with this id");
+                return BadRequest("There is no program with this name");
             }
 
             var exercise = new Exercise()
             {
                 Name = dto.Name,
-                TrainingProgramId = dto.TrainingProgramId,
-                Program = await _context.TrainingProgram.FindAsync(dto.TrainingProgramId)
+                TrainingProgramId = program.Id,
+                Program = program
             };
 
             _context.Exercise.Add(exercise);
@@ -111,15 +146,24 @@ namespace FitnessTrackingApp.Controllers
             return CreatedAtAction("GetExercise", new { id = exercise.Id }, exercise);
         }
 
-        // DELETE: api/Exercises/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteExercise(int id)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        /// 
+        /// DELETE: api/Exercises/Приседания
+        [HttpDelete("{name}")]
+        public async Task<IActionResult> DeleteExercise(string name)
         {
-            var exercise = await _context.Exercise.FindAsync(id);
-            if (exercise == null)
+            if (ExerciseExists(name))
             {
-                return NotFound();
+                return NotFound("There is no exercise with this name");
             }
+
+            var exercise = await _context.Exercise
+                .Where(e => e.Name.Equals(name))
+                .FirstOrDefaultAsync();
 
             _context.Exercise.Remove(exercise);
             await _context.SaveChangesAsync();
@@ -127,9 +171,14 @@ namespace FitnessTrackingApp.Controllers
             return NoContent();
         }
 
-        private bool ExerciseExists(int id)
+        /// <summary>
+        /// Устанавливает факт существования упражнения с определенным названием.
+        /// </summary>
+        /// <param name="name">Название упражнения.</param>
+        /// <returns>Факт о существовании/несуществовании такого объекта.</returns>
+        private bool ExerciseExists(string name)
         {
-            return _context.Exercise.Any(e => e.Id == id);
+            return _context.Exercise.Any(e => e.Name == name);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FitnessTrackingApp.Data;
 using FitnessTrackingApp.Models;
 
 namespace FitnessTrackingApp.DTO.ExerciseDTO
@@ -10,14 +11,9 @@ namespace FitnessTrackingApp.DTO.ExerciseDTO
     public class ExerciseResponseDTO
     {
         /// <summary>
-        /// ID упражнения.
-        /// </summary>
-        public int Id { get; set; }
-
-        /// <summary>
         /// Название.
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Активно/неактивно.
@@ -25,23 +21,22 @@ namespace FitnessTrackingApp.DTO.ExerciseDTO
         public bool IsActive { get; set; }
 
         /// <summary>
-        /// ID тренировочной программы.
+        /// Название тренировочной программы.
         /// </summary>
-        public int TrainingProgramId { get; set; }
+        public required string TrainingProgramName { get; set; }
 
         /// <summary>
         /// Преобразует модель в объект для отображения.
         /// </summary>
         /// <param name="exercise">Объект модели.</param>
         /// <returns>Модель "Упражнение" как объект для отображения.</returns>
-        public static ExerciseResponseDTO MapToResponseDTO(Exercise exercise)
-        {
+        public static ExerciseResponseDTO MapToResponseDTO(Exercise exercise, ApplicationDbContext context)
+        {         
             var result = new ExerciseResponseDTO()
             {
-                Id = exercise.Id,
                 Name = exercise.Name,
                 IsActive = exercise.IsActive,
-                TrainingProgramId = exercise.TrainingProgramId
+                TrainingProgramName = context.TrainingProgram.Find(exercise.TrainingProgramId).Name
             };
 
             return result;
